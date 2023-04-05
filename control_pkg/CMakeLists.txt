@@ -25,6 +25,8 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(vesc_msgs REQUIRED)
+find_package(ackermann_msgs REQUIRED)
+
 find_package(Eigen3 REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
@@ -42,7 +44,7 @@ include_directories(
 
 
 
-add_executable(ctrl_node src/main.cpp src/ctrl.cpp src/trajectory.cpp src/FORCESNLPsolver_interface.c src/FORCESNLPsolver_model.c)
+add_executable(ctrl_node src/main.cpp src/pure_pursuit.cpp src/ctrl.cpp src/trajectory.cpp src/FORCESNLPsolver_interface.c src/FORCESNLPsolver_model.c)
 target_link_libraries(ctrl_node ${Boost_LIBRARIES} ${catkin_LIBRARIES} -ldl -lm ${CMAKE_CURRENT_SOURCE_DIR}/include/FORCESNLPsolver/lib_target/libFORCESNLPsolver.so)
 
 ament_target_dependencies(ctrl_node 
@@ -53,6 +55,7 @@ std_msgs
 visualization_msgs
 std_srvs
 geometry_msgs
+ackermann_msgs
 sensor_msgs
 nav_msgs
 vesc_msgs)
@@ -79,6 +82,7 @@ ament_export_dependencies(
   std_srvs
   geometry_msgs
   sensor_msgs
+  ackermann_msgs
   nav_msgs
   vesc_msgs
   tf2_geometry_msgs

@@ -34,7 +34,11 @@ void TrajectoryManager::updatelookaheadPath(const double& x, const double& y, co
             closest_idx = i;
         }
     }
+    if (closest_idx < ref_path.size()-4){
+        closest_idx = closest_idx +3;
+    }
 
+    
     // Determine the start and end indices of the segment
     double total_dist = 0.0;
     int start_idx = closest_idx;
@@ -55,7 +59,7 @@ void TrajectoryManager::updatelookaheadPath(const double& x, const double& y, co
     }
     std::vector<std::tuple<double, double, double>>::const_iterator first = ref_path.begin() + start_idx;
     std::vector<std::tuple<double, double, double>>::const_iterator last = ref_path.begin() + end_idx;
-
+    
     std::vector<std::tuple<double, double, double>> segment(first, last);
 
     lookahead_path = segment;
@@ -65,7 +69,15 @@ void TrajectoryManager::updatelookaheadPath(const double& x, const double& y, co
 }
 
 
-
+int TrajectoryManager::getRefTrajSize(){
+    
+    if(ref_path.size()<2){
+        return 0;
+    }else{
+        return ref_path.size();
+    }
+    
+}
 
 void TrajectoryManager::display_path(){
     
@@ -169,6 +181,5 @@ void TrajectoryManager::savePathCallback(const std::shared_ptr<std_srvs::srv::Em
 //         file.close();
 //         return path;
 //     }
-
 
 

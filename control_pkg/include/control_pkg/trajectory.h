@@ -23,7 +23,7 @@
 #include <visualization_msgs/msg/marker.hpp>
 #include <boost/filesystem.hpp>
 
-
+#include "state.h"
 
 #include "std_msgs/msg/string.hpp"
 #include "geometry_msgs/msg/twist.hpp"
@@ -39,6 +39,31 @@ class PathLogger {
 public:
     PathLogger(double threshold) : threshold_(threshold) {}
 
+    visualization_msgs::msg::Marker getPathPointMarker(PathPoint pathpoint_){
+                std_msgs::msg::ColorRGBA  lookahead_point_color;        
+                lookahead_point_color.b = 1.0;
+                lookahead_point_color.a = 1.0;
+                visualization_msgs::msg::Marker marker;
+                marker.header.frame_id = "map";
+                marker.header.stamp = rclcpp::Clock().now();
+                marker.type = visualization_msgs::msg::Marker::SPHERE;
+                marker.action = visualization_msgs::msg::Marker::ADD;
+                // Set the pose of the marker to the position of the point
+                marker.pose.position.x = pathpoint_[0];
+                marker.pose.position.y = pathpoint_[1];
+                marker.pose.position.z = 0.0;
+
+                // Set the scale of the marker
+                marker.scale.x = 0.3;
+                marker.scale.y = 0.3;
+                marker.scale.z = 0.1;
+
+                // Set the color of the marker
+                marker.color = lookahead_point_color;
+                return marker;
+
+    }
+    
     visualization_msgs::msg::Marker getPathMarker(std::vector<std::tuple<double, double, double>> tmp_path, std_msgs::msg::ColorRGBA color){
         visualization_msgs::msg::Marker marker;
         marker.header.frame_id = "map";
@@ -83,7 +108,7 @@ public:
             path_.push_back(std::make_tuple(odom.pose.pose.position.x, odom.pose.pose.position.y, yaw));
             last_odom = odom;
         }
-        // std::cout << " path length " << path_.size() << std::endl;
+        
     }
 
     std::vector<std::tuple<double, double, double>> getPath() const {
@@ -154,6 +179,7 @@ public:
     void display_path();
     void updatelookaheadPath(const double& x, const double& y, const double& length);
     std::vector<std::tuple<double, double, double>> getlookaheadPath(); 
+    int getRefTrajSize(); 
     // // extract a lookahead path in frenet coordinate given the current position (odometry)
     // void extractLookaheadPath(const nav_msgs::msg::Odometry& odom, nav_msgs::msg::Path& lookahead_path);
 

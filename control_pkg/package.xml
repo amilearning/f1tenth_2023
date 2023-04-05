@@ -15,6 +15,8 @@
   <depend>vesc_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>std_srvs</depend>
+  <depend>ackermann_msgs</depend>
+  
   <depend>tf2_geometry_msgs</depend>
   <depend>tf2</depend>
   

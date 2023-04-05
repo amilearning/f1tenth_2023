@@ -100,12 +100,12 @@ using symbol_shorthand::G; // GPS pose
     nh_->declare_parameter<double>("InitialVelocityNoise", 0.01);
     nh_->declare_parameter<double>("InitialBiasNoiseAcc", 2e-1);
     nh_->declare_parameter<double>("InitialBiasNoiseGyro", 2e-2);
-    nh_->declare_parameter<double>("AccelerometerSigma", 1.0e-3);
+    nh_->declare_parameter<double>("AccelerometerSigma", 1.0e-2);
     nh_->declare_parameter<double>("GyroSigma", 8.73e-5);
     nh_->declare_parameter<double>("AccelBiasSigma", 3.9e-4);
     nh_->declare_parameter<double>("GyroBiasSigma", 4.8e-5);
-    nh_->declare_parameter<double>("GPSSigma", 0.05);
-    nh_->declare_parameter<double>("localPoseSigma", 0.05);
+    nh_->declare_parameter<double>("GPSSigma", 0.01);
+    nh_->declare_parameter<double>("localPoseSigma", 0.01);
     nh_->declare_parameter<double>("SensorTransformX", 0.0);
     nh_->declare_parameter<double>("SensorTransformY", 0.0);
     nh_->declare_parameter<double>("SensorTransformZ", 0.0);
@@ -285,7 +285,7 @@ void StateEstimator::odomCallback(const nav_msgs::msg::Odometry::SharedPtr odom)
 
     // prior on the first pose
     priorNoisePose_ = noiseModel::Diagonal::Sigmas(
-         (Vector(6) << initialRotationNoise, initialRotationNoise, 3*initialRotationNoise,
+         (Vector(6) << initialRotationNoise, initialRotationNoise, initialRotationNoise,
              gpsSigma_, gpsSigma_, gpsSigma_).finished());
 
      // Add velocity prior
@@ -411,7 +411,7 @@ void StateEstimator::imuCallback(const sensor_msgs::msg::Imu::SharedPtr imu)   {
     poseNew.twist.twist.angular.z = gyro.z() + optimizedBias.gyroscope().z();
 
     poseNew.child_frame_id = "base_link";
-    poseNew.header.frame_id = "odom";
+    poseNew.header.frame_id = "map";
 
     odom_pub_->publish(poseNew);
 
@@ -646,7 +646,7 @@ void StateEstimator::mainloop(){
             if (dist_ < maxLocalPoseError_ || key_ < imuKey-2)
             {
               SharedDiagonal LocalPoseNoise = noiseModel::Diagonal::Sigmas(
-                      (Vector(6) << localPoseSigma_*0.1,localPoseSigma_*0.1,localPoseSigma_*0.1,localPoseSigma_,localPoseSigma_,localPoseSigma_).finished());
+                      (Vector(6) << localPoseSigma_,localPoseSigma_,localPoseSigma_,localPoseSigma_,localPoseSigma_,localPoseSigma_).finished());
 
               PriorFactor<Pose3> localPosePrior_(X(key_), local_pose3_, LocalPoseNoise);
               newFactors.add(localPosePrior_);
